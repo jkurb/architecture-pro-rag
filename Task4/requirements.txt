@@ -1,0 +1,8 @@
+# Зависимости RAG-бота (Задание 4). Python 3.10–3.12.
+# Поиск переиспользует стек Задания 3 (тот же энкодер bge-m3 + FAISS),
+# плюс официальный Anthropic SDK для вызова Claude.
+anthropic>=0.40
+langchain-community>=0.3
+langchain-huggingface>=0.1
+faiss-cpu>=1.8
+sentence-transformers>=3.0
