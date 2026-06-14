@@ -1,0 +1,5 @@
+# Зависимости для подготовки базы знаний (Задание 2).
+# LangChain / FAISS / sentence-transformers подключаются в Задании 3 (индексация).
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=5.0
