@@ -7,3 +7,8 @@ CLAUDE.md
 __pycache__/
 *.pyc
 *.log
+*.err
+
+# Задание 5: индекс с инъекцией детерминированно пересобирается из Task3/index/
+# (python Task5/build_poisoned_index.py) — бинарники в репозиторий не кладём.
+Task5/index_poisoned/
