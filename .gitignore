@@ -12,3 +12,7 @@ __pycache__/
 # Задание 5: индекс с инъекцией детерминированно пересобирается из Task3/index/
 # (python Task5/build_poisoned_index.py) — бинарники в репозиторий не кладём.
 Task5/index_poisoned/
+
+# Задание 6: живые логи обновления и lock-файл (пример — Task6/sample_log.txt).
+Task6/logs/
+Task6/.update.lock

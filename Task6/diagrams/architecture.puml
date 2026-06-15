@@ -1,0 +1,45 @@
+@startuml architecture
+title Задание 6 — автоматическое ежедневное обновление базы знаний QuantumForge
+
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam ArrowColor #336699
+skinparam rectangle {
+  BackgroundColor #FDFDFD
+  BorderColor #666666
+}
+
+rectangle "Планировщик\nDocker-контейнер\n(cron, ежедневно в 06:00)" as sched #E8F0FE
+rectangle "Источник данных\nTask2/knowledge_base/*.md\n(«живая» база знаний,\nприрост ~400 стр./мес)" as src #FFF6E5
+
+package "update_index.py" {
+  rectangle "1. Сканирование\nSHA-256 → diff\n(новые/изменённые/удалённые)" as scan
+  rectangle "2. Чанкинг\nRecursiveCharacterTextSplitter\nchunk=1000, overlap=150" as chunk
+  rectangle "3. Эмбеддинги\nBAAI/bge-m3\n1024-dim, CPU" as embed
+  rectangle "4. Обновление FAISS\nadd / delete по источнику" as upsert
+}
+
+database "Векторный индекс\nTask3/index/\nindex.faiss + index.pkl" as index #E9F7EF
+file "Манифест\nTask6/index_manifest.json\n{файл: sha256}" as manifest
+folder "Логи\nTask6/logs/\nupdate.log + update_log.jsonl" as logs #F5F5F5
+rectangle "Telegram-бот\nrag_core.RagEngine\n(Задания 4–5)" as bot #FBE9F0
+
+sched --> scan : запуск по расписанию
+src --> scan : *.md
+manifest <-> scan : сравнение хэшей
+scan --> chunk : изменённые документы
+chunk --> embed
+embed --> upsert
+upsert --> index : save_local
+upsert --> manifest : фиксация нового состояния
+scan ..> logs : старт / счётчики / ошибки
+upsert ..> logs : +чанки, размер индекса
+index --> bot : ответы по свежей базе
+
+note bottom of logs
+  Лог на каждый запуск: время старта/финиша,
+  +чанки, размер индекса, ошибки.
+  Ошибка → запись в лог + exit 1;
+  повтор — следующим запуском (идемпотентно).
+end note
+@enduml
