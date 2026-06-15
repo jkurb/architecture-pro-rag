@@ -1,0 +1,23 @@
+# Контейнер-планировщик обновления индекса (Задание 6).
+#
+#   docker compose -f Task6/docker-compose.yml build
+#   docker compose -f Task6/docker-compose.yml up -d          # cron 06:00 ежедневно
+#   docker compose -f Task6/docker-compose.yml run --rm updater \
+#       python Task6/update_index.py                          # разовый прогон (тест)
+#   docker compose -f Task6/docker-compose.yml logs -f        # смотреть работу cron
+#   docker compose -f Task6/docker-compose.yml down
+services:
+  updater:
+    build:
+      context: ..                 # контекст сборки — корень репозитория
+      dockerfile: Task6/Dockerfile
+    image: quantumforge/index-updater
+    container_name: qf-index-updater
+    restart: unless-stopped
+    volumes:
+      - ..:/app                   # весь репозиторий: код + база + индекс + логи + манифест
+      - hf-cache:/app/.hfcache    # кэш модели bge-m3 (переживает пересборку)
+    # update_index.py не вызывает LLM — ANTHROPIC_API_KEY не требуется.
+
+volumes:
+  hf-cache:
