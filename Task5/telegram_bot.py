@@ -15,7 +15,7 @@
   TELEGRAM_API_BASE_URL  — базовый URL локального Bot API сервера (опционально);
   CLAUDE_MODEL           — модель Claude (по умолчанию claude-haiku-4-5).
 
-Запуск: python telegram_bot/bot.py
+Запуск: python Task5/telegram_bot.py
 """
 
 from __future__ import annotations

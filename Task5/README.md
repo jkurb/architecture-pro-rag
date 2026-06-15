@@ -22,7 +22,8 @@ LLM используется. По итогам 10 тестов с полной 
    документ чанкуется и эмбеддится тем же энкодером (`bge-m3`), что и легитимная база,
    и добавляется в индекс → `Task5/index_poisoned/` (1105 → 1106 чанков). Проверено:
    инъекция извлекается обычным поиском в top-4.
-3. **Бот с переключаемыми слоями защиты** [secure_bot.py](secure_bot.py).
+3. **Единый движок с переключаемыми слоями защиты** [rag_core.py](rag_core.py) —
+   тот же, что использует Telegram-бот; в тестах работает поверх индекса с инъекцией.
 4. **Серия тестов и лог** [run_security_tests.py](run_security_tests.py) →
    [security_log.md](security_log.md).
 
@@ -97,12 +98,17 @@ python Task5/build_poisoned_index.py       # собрать индекс с ин
 export ANTHROPIC_API_KEY=sk-ant-...
 
 python Task5/run_security_tests.py         # прогон A/B/C → лог
-python Task5/secure_bot.py                 # REPL с защитой (DEFENSE=off — без защиты)
 ```
+
+Тесты используют тот же движок [rag_core.py](rag_core.py) (`RagEngine`, `DefenseConfig`,
+`build_context`), что и Telegram-бот, — отдельного «security-бота» нет. Разница лишь в
+параметрах: тесты создают `RagEngine(index_dir=POISONED_INDEX, defense=...)` поверх индекса
+с инъекцией и переключают слои защиты; бот — `RagEngine()` на чистом индексе со всеми
+защитами. Интерактивный интерфейс — Telegram (см. ниже).
 
 ---
 
-## Локальный Telegram-бот ([bot.py](bot.py))
+## Локальный Telegram-бот ([telegram_bot.py](telegram_bot.py))
 
 Продуктовый интерфейс бота: объединяет RAG-ядро Задания 4 (Few-shot + Chain-of-Thought)
 и слои защиты Задания 5 поверх **чистого** индекса Задания 3 (`Task3/index/`, без инъекции).
@@ -125,7 +131,7 @@ pip install -r Task5/requirements.txt      # добавляет python-telegram-
 export TELEGRAM_BOT_TOKEN=123456:ABC-...
 export ANTHROPIC_API_KEY=sk-ant-...
 
-python Task5/bot.py                         # бот запущен, откройте чат с ним
+python Task5/telegram_bot.py                # бот запущен, откройте чат с ним
 ```
 
 Команды бота: `/start`, `/help`; любое текстовое сообщение → ответ из базы знаний с
@@ -139,7 +145,7 @@ python Task5/bot.py                         # бот запущен, откро�
 
 ```bash
 export TELEGRAM_API_BASE_URL=http://localhost:8081/bot
-python Task5/bot.py
+python Task5/telegram_bot.py
 ```
 
 **Trade-off.** Self-hosted сервер оправдан только при необходимости его специфики
