@@ -96,7 +96,11 @@ add/delete в FAISS), запускаемый **cron внутри Docker-конт
 
 ## Доказательства работы (логи вместо скриншотов)
 
-ТЗ допускает текстовые логи вместо скриншотов:
+Скриншот живого Telegram-бота — ответ с источниками и честные «Я не знаю»:
+
+![Telegram-бот QuantumForge](Task5/screenshots/telegram_demo.png)
+
+Текстовые логи (ТЗ допускает их вместо скриншотов):
 - **5 ответов + «Я не знаю»** (Задание 4): [Task4/dialogs.md](Task4/dialogs.md);
 - **5 полезных + 5 отказов/фильтраций** (Задание 5): [Task5/security_log.md](Task5/security_log.md);
 - **golden-оценка 12/12** (Задание 7): [Task7/report.md](Task7/report.md), [Task7/logs.jsonl](Task7/logs.jsonl).
