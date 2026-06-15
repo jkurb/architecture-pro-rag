@@ -138,19 +138,3 @@ python Task5/telegram_bot.py                # бот запущен, откро�
 рассуждением и источником, либо «Я не знаю». Фильтр инъекций активен (на чистом индексе
 срабатываний нет; защита — подстраховка).
 
-### Опционально: self-hosted сервер tdlib/telegram-bot-api
-
-Бот умеет ходить не в облачный `api.telegram.org`, а в локальный
-[Bot API сервер](https://github.com/tdlib/telegram-bot-api):
-
-```bash
-export TELEGRAM_API_BASE_URL=http://localhost:8081/bot
-python Task5/telegram_bot.py
-```
-
-**Trade-off.** Self-hosted сервер оправдан только при необходимости его специфики
-(загрузка файлов до 2 ГБ, скачивание без лимитов, гибкие вебхуки) — для текстового
-Q&A-бота это избыточно. Он **не делает бота офлайн**: всё равно проксирует запросы в
-дата-центры Telegram и дополнительно требует `api_id`/`api_hash` с
-[my.telegram.org](https://my.telegram.org) и сборки C++-бинарника (OpenSSL, gperf, CMake).
-Для данного проекта достаточно режима по умолчанию (long-polling, без этой переменной).
