@@ -1,0 +1,6 @@
+# Задание 7 переиспользует движок Заданий 4–5 (rag_core).
+anthropic>=0.40
+langchain-community>=0.3
+langchain-huggingface>=0.1
+faiss-cpu>=1.8
+sentence-transformers>=3.0

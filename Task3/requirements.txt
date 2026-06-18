@@ -1,0 +1,9 @@
+# Зависимости индексации (Задание 3). Python 3.10–3.12 (под 3.14 нет колёс
+# torch/faiss; использован 3.10).
+# sentence-transformers подтягивает torch + transformers (модель bge-m3).
+langchain>=0.3
+langchain-community>=0.3
+langchain-huggingface>=0.1
+langchain-text-splitters>=0.3
+faiss-cpu>=1.8
+sentence-transformers>=3.0

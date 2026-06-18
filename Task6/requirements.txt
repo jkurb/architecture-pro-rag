@@ -1,0 +1,8 @@
+# Зависимости апдейтера индекса (update_index.py).
+# LLM не вызывается — anthropic/telegram не нужны; только эмбеддинги + FAISS.
+langchain-community>=0.3
+langchain-core>=0.3
+langchain-huggingface>=0.1
+langchain-text-splitters>=0.3
+sentence-transformers>=3.0
+faiss-cpu>=1.8

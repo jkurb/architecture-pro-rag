@@ -1,0 +1,10 @@
+# Задание 5 переиспользует стек Заданий 3–4.
+anthropic>=0.40
+langchain-community>=0.3
+langchain-huggingface>=0.1
+langchain-text-splitters>=0.3
+sentence-transformers>=3.0
+faiss-cpu>=1.8
+
+# Локальный Telegram-бот (bot.py).
+python-telegram-bot>=21

@@ -1,0 +1,55 @@
+@startuml sequence
+title Задание 7 — обработка запроса и автоматическая оценка качества RAG
+
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+
+actor "Золотой набор\ngolden_questions.json" as golden
+participant "evaluate.py" as eval
+participant "RagEngine\n(rag_core)" as engine
+participant "Эмбеддер\nbge-m3" as embed
+database "FAISS\nindex_gapped" as faiss
+participant "Claude\nHaiku 4.5" as llm
+participant "score()" as scorer
+participant "QueryLogger\n→ logs.jsonl" as logger
+
+golden -> eval : вопрос + ожидаемое поведение
+eval -> engine : ask(query)
+
+engine -> embed : embed(query)
+embed --> engine : вектор 1024-dim
+
+engine -> faiss : similarity_search(k=4)
+note right of faiss #FFEBEE
+  СБОЙ 1: пустой/битый индекс →
+  retrieved = [] → контекст пуст
+end note
+faiss --> engine : top-4 чанка + score
+
+engine -> engine : filter / sanitize чанков
+note right of engine #FFEBEE
+  СБОЙ 2: невалидный/вредоносный
+  чанк → отброшен фильтром (Задание 5)
+end note
+
+engine -> llm : system (CoT + защита)\n+ few-shot + контекст
+note right of llm #FFEBEE
+  СБОЙ 3: генерация — модель
+  игнорирует контекст или галлюцинирует;
+  ловится на этапе оценки
+end note
+llm --> engine : ответ (Рассуждение / Ответ / Источник)
+engine --> eval : answer, retrieved, report
+
+== Оценка ==
+eval -> scorer : score(вопрос, ответ)
+note right of scorer
+  refused? покрытие ключевых слов?
+  → answered_ok / weak / miss /
+    correct_refusal / hallucination
+end note
+scorer --> eval : статус, покрытие, success
+eval -> logger : log(query, sources, длина, success)
+logger --> eval : строка JSON
+eval -> eval : агрегация метрик → report.md
+@enduml

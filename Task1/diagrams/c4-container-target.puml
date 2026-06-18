@@ -1,0 +1,60 @@
+@startuml c4-container-target
+!include <c4/C4_Container.puml>
+
+LAYOUT_TOP_DOWN()
+HIDE_STEREOTYPE()
+SHOW_PERSON_PORTRAIT()
+
+skinparam linetype polyline
+skinparam nodesep 55
+skinparam ranksep 75
+skinparam defaultTextAlignment center
+
+title C4 Container — RAG-бот (вариант C: локальные эмбеддинги + FAISS + Claude через Bedrock)
+
+Person(employee, "Сотрудник QuantumForge")
+Person(owner, "Владелец документации / GRC")
+
+System_Ext(tg, "Telegram", "Bot API")
+System_Ext(bedrock, "AWS Bedrock (eu-central-1)", "Claude Sonnet 4.6 / Haiku 4.5")
+
+System_Boundary(rag, "RAG-бот (Docker Compose, AWS-периметр)") {
+    Container(bot, "Telegram-бот", "Python 3.11 / aiogram", "Приём запросов, форматирование ответов и ссылок на источники")
+    Container(orchestrator, "RAG-оркестратор", "Python 3.11 / LangChain", "Retrieval, сборка промпта, вызов LLM, отказ «не найдено»")
+    Container(embedder, "Сервис эмбеддингов", "Sentence-Transformers bge-m3", "Векторизация запросов и чанков (локально)")
+    ContainerDb(faiss, "Векторный индекс", "FAISS (файл, ~2 ГБ)", "Поиск по сходству, top-k чанков")
+    Container(indexer, "Индексатор (ETL)", "Python / LangChain loaders", "Загрузка, чанкинг, эмбеддинг, сборка индекса")
+    ContainerDb(analytics, "Журнал и аналитика", "SQLite / файлы", "Логи запросов, low-confidence → отчёты о пробелах")
+}
+
+Boundary(sources, "Источники знаний (read-only)") {
+    System_Ext(github, "GitHub monorepo", "MD/MDX, ADR")
+    System_Ext(confluence, "Confluence", "Страницы")
+    System_Ext(gdrive, "Google Drive", "PDF")
+}
+
+' --- Путь запроса ---
+Rel_D(employee, tg, "Вопрос на ЕЯ", "Telegram")
+Rel_D(tg, bot, "update", "Bot API / HTTPS")
+Rel_D(bot, orchestrator, "Запрос пользователя", "in-process")
+Rel_D(orchestrator, embedder, "Вектор запроса", "in-process")
+Rel_D(orchestrator, faiss, "similarity search (top-k)", "FAISS API")
+Rel_R(orchestrator, bedrock, "Генерация по контексту", "HTTPS / AWS SDK")
+Rel_R(orchestrator, analytics, "Лог запроса и confidence", "in-process")
+
+' --- Путь индексации (ETL) ---
+Rel_D(indexer, embedder, "Эмбеддинг чанков", "in-process")
+Rel_D(indexer, faiss, "Сборка / обновление индекса", "FAISS API")
+Rel_D(indexer, github, "Загрузка документов", "Git / API")
+Rel_D(indexer, confluence, "Загрузка страниц", "REST API")
+Rel_D(indexer, gdrive, "Загрузка PDF", "Drive API")
+
+' --- Отчёты о пробелах ---
+Rel_U(analytics, owner, "Отчёты о пробелах", "дашборд / экспорт")
+
+' --- Подсказки компоновки ---
+Lay_R(employee, owner)
+Lay_R(bot, indexer)
+Lay_D(orchestrator, embedder)
+Lay_D(embedder, faiss)
+@enduml

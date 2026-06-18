@@ -1,0 +1,18 @@
+Пример лога обновления индекса (Задание 6) — реальные тестовые запуски.
+Живые логи пишутся в Task6/logs/ (в репозиторий не коммитятся).
+
+── Task6/logs/update.log (человекочитаемый) ─────────────────────────────────
+2026-06-15 03:21:51 INFO: Старт обновления. Источник: Task2/knowledge_base, индекс: Task3/index
+2026-06-15 03:21:59 INFO: Найдено: новых=1, изменённых=0, удалённых=0 (всего в источнике 42 файлов)
+2026-06-15 03:22:01 INFO: Проиндексирован тестовый-зверь.md: +1 чанков
+2026-06-15 03:22:01 INFO: Индекс и манифест сохранены.
+2026-06-15 03:22:01 INFO: index updated at 2026-06-15, 1 files added, 0 errors
+2026-06-15 03:22:01 INFO: Итог: +1/-0 файлов, +1/-0 чанков, размер индекса=1106, ошибок=0, 10.1 c
+
+── Task6/logs/update_log.jsonl (машинный, по записи на запуск) ───────────────
+{"started_at": "2026-06-15T03:21:51+03:00", "finished_at": "2026-06-15T03:22:01+03:00", "duration_seconds": 10.1, "files_added": ["тестовый-зверь.md"], "files_changed": [], "files_removed": [], "new_chunks": 1, "removed_chunks": 0, "index_size": 1106, "errors": []}
+{"started_at": "2026-06-15T03:22:05+03:00", "finished_at": "2026-06-15T03:22:13+03:00", "duration_seconds": 7.6, "files_added": [], "files_changed": ["тестовый-зверь.md"], "files_removed": [], "new_chunks": 1, "removed_chunks": 1, "index_size": 1106, "errors": []}
+{"started_at": "2026-06-15T03:22:39+03:00", "finished_at": "2026-06-15T03:22:46+03:00", "duration_seconds": 7.5, "files_added": [], "files_changed": [], "files_removed": ["тестовый-зверь.md"], "new_chunks": 0, "removed_chunks": 1, "index_size": 1105, "errors": []}
+
+── Требуемый ТЗ формат строки ───────────────────────────────────────────────
+index updated at 2026-06-15, 1 files added, 0 errors

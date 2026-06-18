@@ -1,0 +1,7 @@
+# Расписание обновления индекса QuantumForge (Задание 6) — формат /etc/cron.d.
+# Запуск ежедневно в 06:00. Для проверки можно временно поставить «* * * * *».
+# Переменные окружения для задания (cron-задачи не наследуют ENV образа):
+HF_HOME=/app/.hfcache
+PYTHONUNBUFFERED=1
+# m h dom mon dow  user  command
+0 6 * * * root cd /app && /usr/local/bin/python Task6/update_index.py >> /app/Task6/logs/cron.log 2>&1
